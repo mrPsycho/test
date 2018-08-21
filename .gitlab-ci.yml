@@ -1,0 +1,33 @@
+stages:
+  - build
+  - deploy
+  - test
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+
+build:
+  stage: build
+  script:
+    - docker build --pull -t "mrpsycho/nginx-lua" .
+    - docker push "mrpsycho/nginx-lua"
+  
+
+deploy:
+  stage: deploy
+  script:
+    - docker stop mrpsycho/nginx-lua || true
+    - docker rm mrpsycho/nginx-lua || true
+    - docker pull mrpsycho/nginx-lua
+    - docker run -d -p 10080:80 -p 10443:443 -v $CI_PROJECT_DIR/html:/nginx/html:ro -v $CI_PROJECT_DIR/conf/nginx.conf:/nginx/conf/nginx.conf:ro mrpsycho/nginx-lua
+  only:
+    - master
+    
+    
+test:
+  stage: test
+  script:
+    - curl localhost:10080
+    - curl localhost:10080/hellolua
+  when: on_success 
+    
