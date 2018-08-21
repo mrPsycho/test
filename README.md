@@ -8,8 +8,8 @@ only for test purposes
 Usage
 -----
 
-# push it to Gitlab and do changes
-# gitlab-ci will do the rest
+push it to Gitlab and do changes
+gitlab-ci will do the rest
 
 
 to test it on localhost: 
